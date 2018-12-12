@@ -14,12 +14,14 @@ function ObjectFactory(GL, shader) {
     function do2dRotation(matrix, degree, xCenter, yCenter, xColumnIndex, yColumnIndex, x_speed, y_speed) {
         var cos_t = Math.cos(degree)
         var sin_t = Math.sin(degree)
+
         for (var i = 0; i < matrix.length; i += 3) {
             var x = matrix[i + xColumnIndex] - xCenter
             var y = matrix[i + yColumnIndex] - yCenter
             matrix[i + xColumnIndex] = x * cos_t - y * sin_t + xCenter
             matrix[i + yColumnIndex] = x * sin_t + y * cos_t + yCenter
         }
+
         var sx = x_speed
         var sy = y_speed
         x_speed = sx * cos_t - sy * sin_t
@@ -27,10 +29,10 @@ function ObjectFactory(GL, shader) {
     }
 
     function do3dTranslation(object) {
-
         object.x += object.x_speed
         object.y += object.y_speed
         object.z += object.z_speed
+
         for (var i = 0; i < object.positions.length; i += 3) {
             object.positions[i] += object.x_speed
             object.positions[i + 1] += object.y_speed
@@ -44,17 +46,17 @@ function ObjectFactory(GL, shader) {
 
     function handleLoadedTexture(textures) {
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
-        // Sampler 1
+        
         gl.bindTexture(gl.TEXTURE_2D, textures[0])
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[0].image)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-        // Sampler 2
+        
         gl.bindTexture(gl.TEXTURE_2D, textures[1])
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[1].image)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-        // Sampler 3
+        
         gl.bindTexture(gl.TEXTURE_2D, textures[2])
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textures[2].image)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
@@ -96,7 +98,7 @@ function ObjectFactory(GL, shader) {
         vec: [1, 1, 0]
     }
     huruf.positions = [
-        1.0, -1.0, 0.0,
+        -1.0, -1.0, 0.0,
         -0.5, -1.0, 0.0,
         -1.0, 1.0, 0.0,
         -0.5, 1.0, 0.0,
@@ -106,7 +108,7 @@ function ObjectFactory(GL, shader) {
         0.5, 1.0, 0.0,
         1.0, 1.0, 0.0,
     ]
-    console.log(huruf.positions.length)
+    
     huruf.x = -0.375
     huruf.y = -0.125
     huruf.z = -1.1
@@ -175,22 +177,22 @@ function ObjectFactory(GL, shader) {
     huruf.z_speed = getRandomRangeNumber(-0.008, 0.008)
 
     cube.positions = [
-        //back
         -1.5, -1.5, -1.5,
         1.5, -1.5, -1.5,
         1.5, 1.5, -1.5,
         -1.5, 1.5, -1.5,
-        //left
+
         -1.5, -1.5, 1.5,
         -1.5, -1.5, -1.5,
         -1.5, 1.5, -1.5,
         -1.5, 1.5, 1.5,
-        //bottom
+        
         1.5, -1.5, -1.5,
         1.5, -1.5, 1.5,
         -1.5, -1.5, 1.5,
         -1.5, -1.5, -1.5,
     ]
+
     cube.z = 0
 
 
@@ -200,19 +202,17 @@ function ObjectFactory(GL, shader) {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(huruf.positions), gl.STATIC_DRAW)
         hurufVertexPositionBuffer.itemSize = 3
         hurufVertexPositionBuffer.numItems = huruf.positions.length / 3
+        
         hurufVertexColorBuffer = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, hurufVertexColorBuffer)
         huruf.colors = []
         for (var i = 0; i < hurufVertexPositionBuffer.numItems; i++) {
-            huruf.colors = huruf.colors.concat([232, 69, 4, 1.0])
+            huruf.colors = huruf.colors.concat([200, 200, 0, 1.0])
         }
         hurufVertexColorBuffer.itemSize = 4
         hurufVertexColorBuffer.numItems = 18
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(huruf.colors), gl.STATIC_DRAW)
         gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, hurufVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0)
-
-
-        // shaderManager = this.shaderManager.getAndSwitchShader('texture-shader')
 
         cubeVertexPositionBuffer = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer)
@@ -224,56 +224,50 @@ function ObjectFactory(GL, shader) {
 
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeTextureCoordBuffer)
         var textureCoords = [
-            // Front face
             0.0, 0.0,
             1.0, 0.0,
             1.0, 1.0,
             0.0, 1.0,
-            // Bottom face
+            
             1.0, 1.0,
             0.0, 1.0,
             0.0, 0.0,
             1.0, 0.0,
-            // Left face
+            
             0.0, 0.0,
             1.0, 0.0,
             1.0, 1.0,
             0.0, 1.0
         ]
+
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW)
         cubeTextureCoordBuffer.itemSize = 2
         cubeTextureCoordBuffer.numItems = 12
 
-        // Cube Indices
         cubeVertexIndexBuffer = gl.createBuffer()
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer)
         var cubeVertexIndices = [
-            0, 1, 2, 0, 2, 3, // Front face
-            4, 5, 6, 4, 6, 7, // Back face
-            8, 9, 10, 8, 10, 11 // Top face
+            0, 1, 2, 0, 2, 3, 
+            4, 5, 6, 4, 6, 7, 
+            8, 9, 10, 8, 10, 11 
         ]
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW)
         cubeVertexIndexBuffer.itemSize = 1
         cubeVertexIndexBuffer.numItems = 18
 
-
-        // Cube Normals
         cubeVertexNormalBuffer = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexNormalBuffer)
         var vertexNormals = [
-            // Left face
             -1.0, 0.0, 0.0,
             -1.0, 0.0, 0.0,
             -1.0, 0.0, 0.0,
             -1.0, 0.0, 0.0,
 
-            // Bottom face
             0.0, -1.0, 0.0,
             0.0, -1.0, 0.0,
             0.0, -1.0, 0.0,
             0.0, -1.0, 0.0,
 
-            // Back face
             0.0, 0.0, -1.0,
             0.0, 0.0, -1.0,
             0.0, 0.0, -1.0,
@@ -319,6 +313,7 @@ function ObjectFactory(GL, shader) {
         do2dRotation(huruf.positions, toRadians(
             huruf.isClockWiseRotation ? 1 : -1
         ), huruf.x, huruf.z, 0, 2, huruf.x_speed, huruf.y_speed)
+        
         huruf.yRotation += huruf.isClockWiseRotation ? 1 : -1
     }
 }
